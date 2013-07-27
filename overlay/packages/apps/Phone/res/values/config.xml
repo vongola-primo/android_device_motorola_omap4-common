@@ -23,5 +23,7 @@
     <bool name="has_in_call_noise_suppression">true</bool>
 
     <!-- CrystalTalk -->
-    <string name="voice_quality_param">motoVoiceQualityConfig</string>
+    <add-resource type="string" name="voice_quality_param">
+        <string name="voice_quality_param">motoVoiceQualityConfig</string>
+    </add-resource>
 </resources>
