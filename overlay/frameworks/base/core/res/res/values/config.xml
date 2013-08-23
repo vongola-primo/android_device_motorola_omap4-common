@@ -259,6 +259,8 @@
     </add-resource>
 
     <!-- Is the device capable of hot swapping an UICC Card -->
-    <bool name="config_hotswapCapable">true</bool>
+    <add-resource type="bool" name="config_hotswapCapable">
+        <bool name="config_hotswapCapable">true</bool>
+    </add-resource>
 </resources>
 

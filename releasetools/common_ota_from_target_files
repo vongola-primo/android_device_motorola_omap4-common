@@ -436,6 +436,7 @@ def WriteFullOTAPackage(input_zip, output_zip):
 
   Item.GetMetadata(input_zip)
   Item.Get("system").SetPermissions(script)
+  script.SetPermissions("/system/etc/paranoid/properties.conf", 1000, 1000, 0644)
 
 #  common.CheckSize(boot_img.data, "boot.img", OPTIONS.info_dict)
 #  common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
