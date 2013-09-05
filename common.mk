@@ -251,6 +251,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
     wifi.supplicant_scan_interval=90 \
     persist.wlan.ti.calibrated=0
 
+# Goo.im properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.goo.developerid=alteredlikeness \
+    ro.goo.rom=Slim \
+    ro.goo.version=$(shell date +%s)
+
 # we have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
 
