@@ -254,7 +254,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Goo.im properties
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.goo.developerid=alteredlikeness \
-    ro.goo.rom=Slim \
+    ro.goo.rom=AOKP \
     ro.goo.version=$(shell date +%s)
 
 # we have enough storage space to hold precise GC data
