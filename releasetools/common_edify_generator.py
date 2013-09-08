@@ -101,6 +101,9 @@ class EdifyGenerator(object):
            ");")
     self.script.append(self._WordWrap(cmd))
 
+  def RunPersist(self, arg):
+    self.script.append('run_program("/tmp/install/bin/persist.sh", "%s");' % arg)
+
   def RunBackup(self, command):
     self.script.append('package_extract_file("system/bin/backuptool.sh", "/tmp/backuptool.sh");')
     self.script.append('package_extract_file("system/bin/backuptool.functions", "/tmp/backuptool.functions");')
@@ -283,3 +286,7 @@ class EdifyGenerator(object):
       data = open(os.path.join(input_path, "updater")).read()
     common.ZipWriteStr(output_zip, "META-INF/com/google/android/update-binary",
                        data, perms=0755)
+
+  def CopyDataLocalProp(self):
+    self.script.append('package_extract_file("system/etc/localprop", "/data/local.prop");')
+    self.script.append('set_perm(1000, 1000, 0644, "/data/local.prop");')

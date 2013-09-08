@@ -59,6 +59,12 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
   --override_device <device>
       Override device-specific asserts. Can be a comma-separated list.
 
+  --persist <true|false>
+      Specify whether to enable persistence across installs (on by default).
+
+  --no_assert <true|false>
+      Including this will turn device asserts off.
+
 """
 
 import sys
@@ -97,6 +103,8 @@ OPTIONS.aslr_mode = True
 OPTIONS.worker_threads = 3
 OPTIONS.backuptool = True
 OPTIONS.override_device = 'auto'
+OPTIONS.persist = True
+OPTIONS.no_assert = False
 
 def MostPopularKey(d, default):
   """Given a dict, return the key corresponding to the largest
@@ -397,9 +405,9 @@ def WriteFullOTAPackage(input_zip, output_zip):
       metadata=metadata,
       info_dict=OPTIONS.info_dict)
 
-  #if not OPTIONS.omit_prereq:
-  #  ts = GetBuildProp("ro.build.date.utc", OPTIONS.info_dict)
-  #  script.AssertOlderBuild(ts)
+  if not OPTIONS.no_assert:
+    AppendAssertions(script, OPTIONS.info_dict)
+  device_specific.FullOTA_Assertions()
 
   AppendAssertions(script, OPTIONS.info_dict)
   device_specific.FullOTA_Assertions()
@@ -418,6 +426,26 @@ def WriteFullOTAPackage(input_zip, output_zip):
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
 
+  script.Print("******************************************");
+  script.Print("*    ______  _____   __  __   _____      *");
+  script.Print("*   /\\  _  \\/\\  __`\\/\\ \\/\\ \\ /\\  _ `\\    *");
+  script.Print("*   \\ \\ \\L\\ \\ \\ \\/\\ \\ \\ \\/'/'\\ \\ \\L\\ \\   *");
+  script.Print("*    \\ \\  __ \\ \\ \\ \\ \\ \\ , <  \\ \\ ,__/   *");
+  script.Print("*     \\ \\ \\/\\ \\ \\ \\_\\ \\ \\ \\\\\\`\\ \\ \\ \\/    *");
+  script.Print("*      \\ \\_\\ \\_\\ \\_____\\ \\_\\ \\_\\\\\\ \\_\\    *");
+  script.Print("*       \\/_/\\/_/\\/_____/\\/_/\\/_/ \\/_/    *");
+  script.Print("*                                        *");
+  script.Print("******************************************");
+
+  if OPTIONS.persist:
+    script.Mount("/system")
+    script.RunPersist("save")
+    script.Unmount("/system")
+
+  script.Mount("/cache");
+  script.DeleteRecursive("/cache");
+  script.Mount("/data")  
+  script.DeleteRecursive("/data/dalvik-cache")
   script.Mount("/system")
   script.DeleteRecursive("/system")
   #script.UnpackPackageDir("recovery", "/system")
@@ -436,6 +464,15 @@ def WriteFullOTAPackage(input_zip, output_zip):
 
   Item.GetMetadata(input_zip)
   Item.Get("system").SetPermissions(script)
+  script.SetPermissionsRecursive("/system/etc/init.d", 0, 0, 0755, 0555)
+
+  if OPTIONS.persist:
+    script.RunPersist("restore")
+
+  # Copy data/local.prop
+  script.Mount("/data")
+  script.CopyDataLocalProp()
+  script.Unmount("/data")
 
 #  common.CheckSize(boot_img.data, "boot.img", OPTIONS.info_dict)
 #  common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
@@ -586,7 +623,8 @@ def WriteIncrementalOTAPackage(target_zip, source_zip, output_zip):
   #  0.1 for unpacking verbatim files, symlinking, and doing the
   #      device-specific commands.
 
-  AppendAssertions(script, OPTIONS.target_info_dict)
+  if OPTIONS.no_assert:
+    AppendAssertions(script, OPTIONS.target_info_dict)
   device_specific.IncrementalOTA_Assertions()
 
   script.Print("Verifying current system...")
@@ -777,11 +815,20 @@ def main(argv):
       OPTIONS.omit_prereq = True
     elif o in ("-e", "--extra_script"):
       OPTIONS.extra_script = a
+    elif o in ("--no_assert"):
+      if a in ("on", "On", "true", "True", "yes", "Yes"):
+        OPTIONS.no_assert = True
+      else:
+        OPTIONS.no_assert = False
     elif o in ("-a", "--aslr_mode"):
       if a in ("on", "On", "true", "True", "yes", "Yes"):
         OPTIONS.aslr_mode = True
       else:
         OPTIONS.aslr_mode = False
+    elif o in ("--override_device"):
+      OPTIONS.override_device = a
+    elif o in ("--persist"):
+      OPTIONS.persist = a
     elif o in ("--worker_threads"):
       OPTIONS.worker_threads = int(a)
     elif o in ("--backup"):
@@ -796,6 +843,7 @@ def main(argv):
                              extra_opts="b:k:i:d:wne:a:",
                              extra_long_opts=["board_config=",
                                               "package_key=",
+                                              "no_assert=",
                                               "incremental_from=",
                                               "wipe_user_data",
                                               "no_prereq",
@@ -803,6 +851,7 @@ def main(argv):
                                               "worker_threads=",
                                               "aslr_mode=",
                                               "backup=",
+                                              "persist=",
                                               "override_device="],
                              extra_option_handler=option_handler)
 
