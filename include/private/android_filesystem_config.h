@@ -184,6 +184,7 @@ static const struct android_id_info android_ids[] = {
     { "qcom_oncrpc", AID_QCOM_ONCRPC, },
     { "qcom_diag", AID_QCOM_DIAG, },
     { "net_bt_stack",  AID_NET_BT_STACK, },
+
     { "mot_accy",  AID_MOT_ACCY, },
     { "mot_pwric", AID_MOT_PWRIC, },
     { "mot_usb",   AID_MOT_USB, },
@@ -196,6 +197,7 @@ static const struct android_id_info android_ids[] = {
     { "mot_whisper",   AID_MOT_WHISPER, },
     { "mot_caif",  AID_MOT_CAIF, },
     { "mot_dlna",  AID_MOT_DLNA, },
+
     { "misc",          AID_MISC, },
     { "nobody",        AID_NOBODY, },
     { "theme_man", AID_THEMEMAN },
