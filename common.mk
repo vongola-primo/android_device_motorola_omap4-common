@@ -160,10 +160,6 @@ PRODUCT_COPY_FILES += \
     $(COMMON_FOLDER)/prebuilt/etc/media_codecs.xml:system/etc/media_codecs.xml \
     $(COMMON_FOLDER)/prebuilt/etc/audio_policy.conf:system/etc/audio_policy.conf
 
-# system/etc init.d scripts
-PRODUCT_COPY_FILES += \
-    $(COMMON_FOLDER)/prebuilt/etc/init.d/86greenled:system/etc/init.d/86greenled
-
 # Root files
 PRODUCT_PACKAGES += \
     default.prop \
