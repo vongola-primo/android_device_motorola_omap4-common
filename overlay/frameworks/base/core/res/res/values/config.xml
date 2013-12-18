@@ -262,5 +262,8 @@
     <add-resource type="bool" name="config_hotswapCapable">
         <bool name="config_hotswapCapable">true</bool>
     </add-resource>
-</resources>
 
+    <!-- Device supports LED flashlight -->
+    <bool name="config_enableTorch">true</bool>
+
+</resources>
